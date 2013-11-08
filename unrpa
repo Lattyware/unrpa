@@ -54,7 +54,7 @@ class UnRPA:
 		self.mkdir = mkdir
 		self.version = version
 		self.archive = filename
-	
+
 	def extract_files(self):
 		if self.verbose > 0:
 			print("unrpa: extracting files.")
@@ -68,7 +68,7 @@ class UnRPA:
 			raw_file = self.extract_file(item, data)
 			with open(os.path.join(self.path, item), "wb") as f:
 				f.write(raw_file)
-	
+
 	def list_files(self):
 		if self.verbose > 1:
 			print("unrpa: listing files:")
@@ -77,7 +77,7 @@ class UnRPA:
 		paths.sort()
 		for path in paths:
 			print(path)
-	
+
 	def extract_file(self, name, data):
 		if self.verbose > 1:
 			print("unrpa: extracting file: " + name)
@@ -90,20 +90,13 @@ class UnRPA:
 			f.seek(offset)
 			raw_file = start + f.read(dlen - len(start))
 		return raw_file
-	
+
 	def make_directory_structure(self, name):
 		if self.verbose > 2:
 			print("unrpa: creating directory structure:" + name)
-		dirs = []
-		while os.path.basename(name):
-			name, dirname = os.path.split(name)
-			dirs.append(dirname)
-		current = os.sep
-		dirs.reverse()
-		for directory in dirs:
-			current = os.path.join(current, directory)
-			if not os.path.isdir(current):
-				os.mkdir(current)
+
+		if not os.path.exists(name) and not os.path.isdir(name):
+			os.makedirs(name)
 
 	def get_index(self):
 		if not self.version:
@@ -137,7 +130,7 @@ class UnRPA:
 			return final
 		else:
 			return index
-	
+
 	def determine_version(self, line):
 		if line.startswith("RPA-3.0 "):
 			return 3
@@ -145,7 +138,7 @@ class UnRPA:
 			return 2
 		else:
 			return None
-	
+
 	def deobfuscate_index(self, index, key):
 		for k in index.keys():
 			if len(index[k][0]) == 2:
@@ -170,18 +163,18 @@ if __name__ == "__main__":
 		if options.verbose:
 			parser.print_help()
 		parser.error("incorrect number of arguments.")
-	
+
 	if options.list and options.path:
 		parser.error("option -p: only valid when extracting.")
-	
+
 	if options.mkdir and not options.path:
 		parser.error("option -m: only valid when --path (-p) is set.")
-	
+
 	if options.list and options.verbose == 0:
 		parser.error("option -l: can't be silent while listing data.")
-	
+
 	filename = args[0]
-	
+
 	unarchiver = UnRPA(filename, options.verbose, options.path, options.mkdir, options.version)
 	if options.list:
 		unarchiver.list_files()
