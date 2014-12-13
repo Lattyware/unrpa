@@ -69,7 +69,7 @@ class UnRPA:
 		for item, data in index.iteritems():
 			self.make_directory_structure(os.path.join(self.path, os.path.split(item)[0]))
 			raw_file = self.extract_file(item, data)
-			with open(os.path.join(self.path, item), "wb") as f:
+			with open(os.path.join(self.path, item.encode('UTF-8')), "wb") as f:
 				f.write(raw_file)
 
 	def list_files(self):
