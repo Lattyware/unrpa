@@ -15,26 +15,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-### Copyright Gareth Latty 2009
-
-### Version 1.4 (Current)
-### make_directory_structure improved.
-
-### Version 1.3
-### BUGFIX: Presumed that the RPA archive would use the path seperator of the
-###         system. Broke under some circumstances.
-
-### Version 1.2
-### BUGFIX: Presumed a forwards slash in the make_directory_structure function,
-###         Broke under windows when using --mkdir.
-
-### Version 1.1
-### BUGFIX: Crash upon listing files when in verbose mode.
-### BUGFIX: A few extra bytes were appended to the end of every file.
-
-### Version 1.0
-### Initial Release
-
 import os
 import optparse
 import sys
