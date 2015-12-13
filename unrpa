@@ -59,7 +59,7 @@ class UnRPA:
 		paths = index.keys()
 		paths.sort()
 		for path in paths:
-			print(path)
+			print(path.encode('utf-8'))
 
 	def extract_file(self, name, data):
 		if self.verbose > 1:
