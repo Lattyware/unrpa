@@ -91,8 +91,9 @@ class UnRPA:
 		if self.version == 3:
 			with open(self.archive, "rb") as f:
 				l = f.readline()
-				offset = int(l[8:24], 16)
-				key = int(l[25:33], 16)
+				parts = l.split()
+				offset = int(parts[1], 16)
+				key = int(parts[2], 16)
 				f.seek(offset)
 				index = pickle.loads(f.read().decode("zlib"))
 				index = self.deobfuscate_index(index, key)
