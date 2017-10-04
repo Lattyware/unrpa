@@ -46,9 +46,12 @@ class UnRPA:
 		if not os.path.isdir(self.path):
 			sys.exit("unrpa: error: path doesn't exist, if you want to create it, use -m.")
 		index = self.get_index()
+		num_files = len(index)
+		idx = 0.0
 		for item, data in index.iteritems():
+			idx += 1
 			self.make_directory_structure(os.path.join(self.path, os.path.split(item)[0]))
-			raw_file = self.extract_file(item, data)
+			raw_file = self.extract_file(item, data, round(idx / num_files * 100, 2))
 			with open(os.path.join(self.path, item.encode('UTF-8')), "wb") as f:
 				f.write(raw_file)
 
@@ -61,9 +64,9 @@ class UnRPA:
 		for path in paths:
 			print(path.encode('utf-8'))
 
-	def extract_file(self, name, data):
+	def extract_file(self, name, data, progress = 0):
 		if self.verbose > 1:
-			print("unrpa: extracting file: " + name)
+			print("unrpa: [{:04.2f}%] {:>3}".format(progress, name))
 		if len(data[0]) == 2:
 			offset, dlen = data[0]
 			start = ''
