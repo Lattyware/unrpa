@@ -1,7 +1,7 @@
 Unrpa is a script to extract files from archives created for the Ren'Py Visual Novel Engine (http://www.renpy.org/).
 
-You will need Python 2.x in order to run it (either install through your package manager or see 
-https://www.python.org/downloads/ and look for the latest release with a version beginning with 2).
+You will need Python 3.x in order to run it (either install through your package manager or see
+https://www.python.org/downloads/).
 
 Options:
   --version             show program's version number and exit
