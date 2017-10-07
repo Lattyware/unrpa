@@ -3,17 +3,16 @@ Unrpa is a script to extract files from archives created for the Ren'Py Visual N
 You will need Python 3.x in order to run it (either install through your package manager or see
 https://www.python.org/downloads/).
 
-Options:
-  --version             show program's version number and exit
-  -h, --help            show this help message and exit
-  -v, --verbose         explain what is being done [default]
-  -s, --silent          make no output
-  -l, --list            only list contents, do not extract
-  -p PATH, --path=PATH  will extract to the given path
-  -m, --mkdir           will make any non-existant directories in extraction
-                        path
-  -f VERSION, --force=VERSION
-                        forces an archive version. May result in failure.
-                        
 Usage: unrpa [options] pathname
 
+Options:
+  --version                     show program's version number and exit
+  -h, --help                    show this help message and exit
+  -v, --verbose                 explain what is being done [default].
+  -s, --silent                  no output.
+  -l, --list                    only list contents, do not extract.
+  -p PATH, --path=PATH          will extract to the given path.
+  -m, --mkdir                   will make any non-existent directories in extraction
+                                path.
+  -f VERSION, --force=VERSION   forces an archive version. May result in failure.
+  --continue-on-error           try to continue extraction when something goes wrong.
