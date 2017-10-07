@@ -55,12 +55,11 @@ class UnRPA:
 
         index = self.get_index()
         total_files = len(index)
-        for file_number, (item, data) in enumerate(index.items()):
+        for file_number, (path, data) in enumerate(index.items()):
             try:
-                item_path = item.decode("utf-8")
-                self.make_directory_structure(os.path.join(self.path, os.path.split(item_path)[0]))
-                raw_file = self.extract_file(item_path, data, file_number, total_files)
-                with open(os.path.join(self.path, item_path), "wb") as f:
+                self.make_directory_structure(os.path.join(self.path, os.path.split(path)[0]))
+                raw_file = self.extract_file(path, data, file_number, total_files)
+                with open(os.path.join(self.path, path), "wb") as f:
                     f.write(raw_file)
             except BaseException as e:
                 if self.continue_on_error:
@@ -112,10 +111,13 @@ class UnRPA:
             if self.version == 3:
                 index = self.deobfuscate_index(index, key)
 
-        if "/" != os.sep:
-            return {item.replace("/", os.sep): data for item, data in index.items()}
-        else:
-            return index
+        return {self.ensure_str_path(path).replace("/", os.sep): data for path, data in index.items()}
+
+    def ensure_str_path(self, key):
+        try:
+            return key.decode("utf-8")
+        except AttributeError:
+            return key
 
     def detect_version(self):
         ext = os.path.splitext(self.archive)[1].lower()
