@@ -138,7 +138,7 @@ class UnRPA:
 
     def deobfuscate_entry(self, key, entry):
         if len(entry[0]) == 2:
-            return [(offset ^ key, dlen ^ key, "") for offset, dlen in entry]
+            return [(offset ^ key, dlen ^ key, b"") for offset, dlen in entry]
         else:
             return [(offset ^ key, dlen ^ key, start) for offset, dlen, start in entry]
 
