@@ -99,6 +99,7 @@ class UnRPA:
 
         with open(self.archive, "rb") as f:
             offset = 0
+            key = None
             if self.version == 2:
                 offset = int(f.readline()[8:], 16)
             elif self.version == 3:
@@ -108,7 +109,7 @@ class UnRPA:
                 key = int(parts[2], 16)
             f.seek(offset)
             index = pickle.loads(zlib.decompress(f.read()), encoding="bytes")
-            if self.version == 3:
+            if key is not None:
                 index = self.deobfuscate_index(index, key)
 
         return {self.ensure_str_path(path).replace("/", os.sep): data for path, data in index.items()}
