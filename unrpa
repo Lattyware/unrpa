@@ -25,10 +25,100 @@ import zlib
 import traceback
 
 
+class Version:
+    def __init__(self, name):
+        self.name = name
+
+    def find_offset_and_key(self, file):
+        raise NotImplementedError()
+
+    def detect(self, extension, first_line):
+        raise NotImplementedError()
+
+    def __str__(self):
+        return self.name
+
+
+class RPA1(Version):
+    def __init__(self):
+        super().__init__("RPA-1.0")
+
+    def detect(self, extension, first_line):
+        return extension == ".rpi"
+
+    def find_offset_and_key(self, file):
+        return 0, None
+
+
+class HeaderBasedVersion(Version):
+    def __init__(self, name, header):
+        super().__init__(name)
+        self.header = header
+
+    def find_offset_and_key(self, file):
+        raise NotImplementedError()
+
+    def detect(self, extension, first_line):
+        return first_line.startswith(self.header)
+
+
+class RPA2(HeaderBasedVersion):
+    def __init__(self):
+        super().__init__("RPA-2.0", b"RPA-2.0")
+
+    def find_offset_and_key(self, file):
+        offset = int(file.readline()[8:], 16)
+        return offset, None
+
+
+class RPA3(HeaderBasedVersion):
+    def __init__(self):
+        super().__init__("RPA-3.0", b"RPA-3.0")
+
+    def find_offset_and_key(self, file):
+        line = file.readline()
+        parts = line.split()
+        offset = int(parts[1], 16)
+        key = int(parts[2], 16)
+        return offset, key
+
+
+class ALT1(HeaderBasedVersion):
+    EXTRA_KEY = 0xDABE8DF0
+
+    def __init__(self):
+        super().__init__("ALT-1.0", b"ALT-1.0")
+
+    def find_offset_and_key(self, file):
+        line = file.readline()
+        parts = line.split()
+        key = int(parts[1], 16) ^ ALT1.EXTRA_KEY
+        offset = int(parts[2], 16)
+        return offset, key
+
+
+class ZiX(HeaderBasedVersion):
+    def __init__(self):
+        super().__init__("ZiX-12B", b"ZiX-12B")
+
+    def find_offset_and_key(self, file):
+        # TODO: see https://github.com/Lattyware/unrpa/issues/15
+        raise NotImplementedError()
+
+
+RPA1 = RPA1()
+RPA2 = RPA2()
+RPA3 = RPA3()
+ALT1 = ALT1()
+ZiX = ZiX()
+Versions = [RPA1, RPA2, RPA3, ALT1, ZiX]
+
+
 class UnRPA:
     NAME = "unrpa"
 
-    def __init__(self, filename, verbosity=1, path=None, mkdir=False, version=None, continue_on_error=False):
+    def __init__(self, filename, verbosity=1, path=None, mkdir=False, version=None, continue_on_error=False,
+                 offset_and_key=None):
         self.verbose = verbosity
         if path:
             self.path = os.path.abspath(path)
@@ -38,10 +128,16 @@ class UnRPA:
         self.version = version
         self.archive = filename
         self.continue_on_error = continue_on_error
+        self.offset_and_key = offset_and_key
+        self.tty = sys.stdout.isatty()
 
     def log(self, verbosity, message):
-        if self.verbose > verbosity:
+        if self.tty and self.verbose > verbosity:
             print("{}: {}".format(UnRPA.NAME, message))
+
+    def log_tty(self, message):
+        if not self.tty and self.verbose > 1:
+            print(message)
 
     def exit(self, message):
         sys.exit("{}: error: {}".format(UnRPA.NAME, message))
@@ -79,6 +175,7 @@ class UnRPA:
 
     def extract_file(self, name, data, file_number, total_files):
         self.log(1, "[{:04.2%}] {:>3}".format(file_number / float(total_files), name))
+        self.log_tty(name)
         offset, dlen, start = data[0]
         with open(self.archive, "rb") as f:
             f.seek(offset)
@@ -94,19 +191,18 @@ class UnRPA:
         if not self.version:
             self.version = self.detect_version()
 
-        if not self.version:
-            self.exit("file doesn't look like an archive, if you are sure it is, use -f.")
+        if self.version == ZiX and (not self.offset_and_key):
+            self.exit("This archive uses the ZiX-12B obfuscation scheme, which is non-standard and not currently "
+                      "supported by unrpa. Please see https://github.com/Lattyware/unrpa/issues/15 for more details.")
+        elif not self.version:
+            self.exit("This archive doesn't have a header we recognise, if you know the version of the archive you can "
+                      "try using -f to extract it without the header.")
 
         with open(self.archive, "rb") as f:
-            offset = 0
-            key = None
-            if self.version == 2:
-                offset = int(f.readline()[8:], 16)
-            elif self.version == 3:
-                line = f.readline()
-                parts = line.split()
-                offset = int(parts[1], 16)
-                key = int(parts[2], 16)
+            if self.offset_and_key:
+                offset, key = self.offset_and_key
+            else:
+                offset, key = self.version.find_offset_and_key(f)
             f.seek(offset)
             index = pickle.loads(zlib.decompress(f.read()), encoding="bytes")
             if key is not None:
@@ -122,26 +218,20 @@ class UnRPA:
 
     def detect_version(self):
         ext = os.path.splitext(self.archive)[1].lower()
-        if ext == ".rpa":
-            with open(self.archive, "rb") as f:
-                line = f.readline()
-                if line.startswith(b"RPA-3.0 "):
-                    return 3
-                if line.startswith(b"RPA-2.0 "):
-                    return 2
-                else:
-                    return None
-        elif ext == ".rpi":
-            return 1
+        with open(self.archive, "rb") as f:
+            line = f.readline()
+            for version in Versions:
+                if version.detect(ext, line):
+                    return version
+        return None
 
     def deobfuscate_index(self, index, key):
         return {k: self.deobfuscate_entry(key, v) for k, v in index.items()}
 
     def deobfuscate_entry(self, key, entry):
         if len(entry[0]) == 2:
-            return [(offset ^ key, dlen ^ key, b"") for offset, dlen in entry]
-        else:
-            return [(offset ^ key, dlen ^ key, start) for offset, dlen, start in entry]
+            entry = ((offset, dlen, b"") for offset, dlen in entry)
+        return [(offset ^ key, dlen ^ key, start) for offset, dlen, start in entry]
 
 
 if __name__ == "__main__":
@@ -157,14 +247,35 @@ if __name__ == "__main__":
                         help="will extract to the given path.")
     parser.add_argument("-m", "--mkdir", action="store_true", dest="mkdir", default=False,
                         help="will make any non-existent directories in extraction path.")
-    parser.add_argument("-f", "--force", action="store", type=int, dest="version", default=None,
-                        help="forces an archive version. May result in failure.")
+    parser.add_argument("-f", "--force", action="store", type=str, dest="version", default=None,
+                        help="forces an archive version. May result in failure. Possible versions: "
+                             + ", ".join(str(version) for version in Versions))
     parser.add_argument("--continue-on-error", action="store_true", dest="continue_on_error", default=False,
                         help="try to continue extraction when something goes wrong.")
+    parser.add_argument("-o", "--offset", action="store", type=int, dest="offset", default=None,
+                        help="sets an offset to be used to decode ZiX-12B archives.")
+    parser.add_argument("-k", "--key", action="store", type=int, dest="key", default=None,
+                        help="sets a key to be used to decode ZiX-12B archives.")
 
     parser.add_argument("filename", metavar="FILENAME", type=str, help="the RPA file to extract.")
 
     args = parser.parse_args()
+
+    provided_version = None
+    if args.version:
+        for version in Versions:
+            if args.version.lower() == version.name.lower():
+                provided_version = version
+                break
+        else:
+            parser.error("The archive version you gave isn't one we recognise - it needs to be one of: " +
+                         ", ".join(str(version) for version in Versions))
+
+    provided_offset_and_key = None
+    if args.key and args.offset:
+        provided_offset_and_key = (args.offset, args.key)
+    if bool(args.key) != bool(args.offset):
+        parser.error("If you set a key or offset, you must set both.")
 
     if args.list and args.path:
         parser.error("option -path: only valid when extracting.")
@@ -181,7 +292,8 @@ if __name__ == "__main__":
     if not os.path.isfile(args.filename):
         parser.error("No such file: '{}'.".format(args.filename))
 
-    extractor = UnRPA(args.filename, args.verbose, args.path, args.mkdir, args.version, args.continue_on_error)
+    extractor = UnRPA(args.filename, args.verbose, args.path, args.mkdir, provided_version, args.continue_on_error,
+                      provided_offset_and_key)
     if args.list:
         extractor.list_files()
     else:
