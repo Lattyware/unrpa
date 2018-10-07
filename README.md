@@ -7,7 +7,7 @@ for [the Ren'Py Visual Novel Engine](http://www.renpy.org/).
 
 ## Dependencies
 
-You will need Python 3.x in order to run it (either install through
+You will need Python 3.4 or later in order to run it (either install through
 your package manager or
 [directly from python.org](https://www.python.org/downloads/)).
 
