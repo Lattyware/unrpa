@@ -77,7 +77,7 @@ usage: unrpa [-h] [-v] [-s] [-l] [-p PATH] [-m] [-f VERSION]
 | -l, --list                   | only list contents, do not extract.                            |
 | -p PATH, --path PATH         | will extract to the given path.                                |
 | -m, --mkdir                  | will make any non-existent directories in extraction path.     |
-| -f VERSION, --force VERSION  | forces an archive version. May result in failure.<br>Possible versions: RPA-3.0, ZiX-12B, ALT-1.0, RPA-2.0, RPA-1.0. |
+| -f VERSION, --force VERSION  | forces an archive version. May result in failure.<br>Possible versions: RPA-3.0, ZiX-12A, ZiX-12B, ALT-1.0, RPA-2.0, RPA-1.0. |
 | --continue-on-error          | try to continue extraction when something goes wrong.          | 
 | -o OFFSET, --offset OFFSET   | sets an offset to be used to decode unsupported archives.      |
 | -k KEY, --key KEY            | sets a key to be used to decode unsupported archives.          |

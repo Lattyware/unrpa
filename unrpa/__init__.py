@@ -1,4 +1,3 @@
-import io
 import os
 import pickle
 import sys
@@ -100,11 +99,7 @@ class UnRPA:
                         os.path.join(self.path, os.path.split(path)[0])
                     )
                     file_view = self.extract_file(
-                        path,
-                        data,
-                        file_number,
-                        total_files,
-                        cast(io.BufferedReader, archive),
+                        path, data, file_number, total_files, archive
                     )
                     with open(os.path.join(self.path, path), "wb") as output_file:
                         version.postprocess(file_view, output_file)
@@ -131,7 +126,7 @@ class UnRPA:
         data: ComplexIndexEntry,
         file_number: int,
         total_files: int,
-        archive: io.BufferedIOBase,
+        archive: BinaryIO,
     ) -> ArchiveView:
         self.log(
             UnRPA.info, f"[{file_number / float(total_files):04.2%}] {name:>3}", name

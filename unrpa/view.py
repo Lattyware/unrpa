@@ -1,16 +1,15 @@
 import io
-from typing import cast, Callable
+from typing import cast, Callable, BinaryIO
 
 
 class ArchiveView:
     """A file-like object that just passes through to the underlying file."""
 
-    def __init__(
-        self, archive: io.BufferedIOBase, offset: int, length: int, prefix: bytes
-    ):
+    def __init__(self, archive: BinaryIO, offset: int, length: int, prefix: bytes):
         archive.seek(offset)
+        self.name = archive.name
         self.remaining = length
-        self.sources = [archive]
+        self.sources = [cast(io.BufferedIOBase, archive)]
         if prefix:
             self.sources.insert(0, cast(io.BufferedIOBase, io.BytesIO(prefix)))
 
