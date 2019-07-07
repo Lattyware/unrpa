@@ -5,7 +5,7 @@ with open("README.md", "r") as readme:
 
 setuptools.setup(
     name="unrpa",
-    version="2.0.2",
+    version="2.1.0",
     author="Gareth Latty",
     author_email="gareth@lattyware.co.uk",
     description="Extract files from the RPA archive format (from the Ren'Py Visual Novel Engine).",

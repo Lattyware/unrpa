@@ -12,7 +12,7 @@ It can also be used as a library.
 ### Package manager
 
 The best way to install unrpa is through your package manager, if a package is available for your operating system.
-I maintain [an AUR package](https://aur.archlinux.org/packages/unrpa/)) for Arch Linux users.
+I maintain [an AUR package](https://aur.archlinux.org/packages/unrpa/) for Arch Linux users.
 
 ### pip
 
@@ -55,7 +55,7 @@ If you are running from source, you will need execute python directly:
  
        py -3 -m unrpa -mp "path\to\output\dir" "path\to\archive.rpa"
 
-## Command Line Usage
+## Command line usage
 
 ```
 usage: unrpa [-h] [-v] [-s] [-l] [-p PATH] [-m] [-f VERSION]
@@ -82,3 +82,19 @@ usage: unrpa [-h] [-v] [-s] [-l] [-p PATH] [-m] [-f VERSION]
 | -o OFFSET, --offset OFFSET   | sets an offset to be used to decode unsupported archives.      |
 | -k KEY, --key KEY            | sets a key to be used to decode unsupported archives.          |
 | --version                    | show program's version number and exit                         |
+
+## Errors
+
+### Common errors
+
+  - Check you are using the latest version of Python 3.
+  - Check you are using quotes around file paths.
+  - Video guides may be out of date, please check this file for up-to-date advice on using the tool.
+
+### New errors
+
+If something goes wrong while extracting an archive, please 
+[make an issue](https://github.com/Lattyware/unrpa/issues/new). 
+
+New variants of the RPA format get created regularly, so new games might not work - generally support can be 
+added quickly though.
