@@ -4,7 +4,7 @@ import itertools
 import os
 import re
 import struct
-from typing import BinaryIO, Tuple, Optional, FrozenSet, Type
+from typing import BinaryIO, Tuple, Optional, Type
 
 from unrpa.versions.errors import (
     VersionSpecificRequirementUnmetError,
@@ -90,7 +90,7 @@ class ZiX12B(HeaderBasedVersion):
             sink.write(segment)
 
 
-versions: FrozenSet[Type[Version]] = frozenset({ZiX12A, ZiX12B})
+versions: Tuple[Type[Version], ...] = (ZiX12A, ZiX12B)
 
 
 class LoaderRequiredError(VersionSpecificRequirementUnmetError):

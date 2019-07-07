@@ -1,4 +1,4 @@
-from typing import BinaryIO, Tuple, Optional, FrozenSet, Type
+from typing import BinaryIO, Tuple, Optional, Type
 
 from unrpa.versions.version import HeaderBasedVersion, Version
 
@@ -18,4 +18,4 @@ class ALT1(HeaderBasedVersion):
         return offset, key
 
 
-versions: FrozenSet[Type[Version]] = frozenset({ALT1})
+versions: Tuple[Type[Version], ...] = (ALT1,)

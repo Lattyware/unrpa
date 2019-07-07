@@ -1,4 +1,4 @@
-from typing import FrozenSet, BinaryIO, Tuple, Optional, Type
+from typing import BinaryIO, Tuple, Optional, Type
 
 from unrpa.versions.version import ExtensionBasedVersion, HeaderBasedVersion, Version
 
@@ -38,18 +38,4 @@ class RPA3(HeaderBasedVersion):
         return offset, key
 
 
-class RPA32(HeaderBasedVersion):
-    """A slightly custom variant of RPA-3.0."""
-
-    name = "RPA-3.2"
-    header = b"RPA-3.2"
-
-    def find_offset_and_key(self, archive: BinaryIO) -> Tuple[int, Optional[int]]:
-        line = archive.readline()
-        parts = line.split()
-        offset = int(parts[1], 16)
-        key = int(parts[3], 16)
-        return offset, key
-
-
-versions: FrozenSet[Type[Version]] = frozenset({RPA1, RPA2, RPA3, RPA32})
+versions: Tuple[Type[Version], ...] = (RPA1, RPA2, RPA3)

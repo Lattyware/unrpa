@@ -24,6 +24,7 @@ from typing import Tuple, Optional, Any
 
 from unrpa import UnRPA
 from unrpa.errors import UnRPAError
+from unrpa import meta
 
 
 def main() -> None:
@@ -81,7 +82,7 @@ def main() -> None:
         dest="version",
         default=None,
         help="forces an archive version. May result in failure. Possible versions: "
-        + ", ".join(version.name for version in UnRPA.provided_versions)
+        + ", ".join(version.name for version in UnRPA.ordered_versions)
         + ".",
     )
     parser.add_argument(
@@ -110,7 +111,9 @@ def main() -> None:
         help="sets a key to be used to decode unsupported archives.",
     )
 
-    parser.add_argument("--version", action="version", version="%(prog)s 2.0.1")
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {meta.version}"
+    )
 
     parser.add_argument(
         "filename", metavar="FILENAME", type=str, help="the RPA file to extract."
@@ -129,7 +132,7 @@ def main() -> None:
         except StopIteration:
             parser.error(
                 "The archive version you gave isn’t one we recognise - it needs to be one of: "
-                + ", ".join(version.name for version in UnRPA.provided_versions)
+                + ", ".join(version.name for version in UnRPA.ordered_versions)
             )
 
     provided_offset_and_key: Optional[Tuple[int, int]] = None
