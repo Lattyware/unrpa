@@ -38,4 +38,18 @@ class RPA3(HeaderBasedVersion):
         return offset, key
 
 
-versions: FrozenSet[Type[Version]] = frozenset({RPA1, RPA2, RPA3})
+class RPA32(HeaderBasedVersion):
+    """A slightly custom variant of RPA-3.0."""
+
+    name = "RPA-3.2"
+    header = b"RPA-3.2"
+
+    def find_offset_and_key(self, archive: BinaryIO) -> Tuple[int, Optional[int]]:
+        line = archive.readline()
+        parts = line.split()
+        offset = int(parts[1], 16)
+        key = int(parts[3], 16)
+        return offset, key
+
+
+versions: FrozenSet[Type[Version]] = frozenset({RPA1, RPA2, RPA3, RPA32})
