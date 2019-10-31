@@ -28,10 +28,7 @@ from unrpa import meta
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        prog="unrpa",
-        description="Extract files from the RPA archive format (from the Ren'Py Visual Novel Engine).",
-    )
+    parser = argparse.ArgumentParser(prog=meta.name, description=meta.description)
 
     parser.add_argument(
         "-v",
@@ -112,7 +109,7 @@ def main() -> None:
     )
 
     parser.add_argument(
-        "--version", action="version", version=f"%(prog)s {meta.version}"
+        "--version", action="version", version=f"{meta.name} {meta.version}"
     )
 
     parser.add_argument(

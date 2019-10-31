@@ -5,11 +5,11 @@ with open("README.md", "r") as readme:
     long_description = readme.read()
 
 setuptools.setup(
-    name="unrpa",
+    name=meta.name,
     version=meta.version,
     author="Gareth Latty",
     author_email="gareth@lattyware.co.uk",
-    description="Extract files from the RPA archive format (from the Ren'Py Visual Novel Engine).",
+    description=meta.description,
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Lattyware/unrpa",
