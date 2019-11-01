@@ -1,3 +1,5 @@
+import itertools
+import operator
 import os
 import pickle
 import sys
@@ -13,6 +15,7 @@ from typing import (
     Type,
     BinaryIO,
     FrozenSet,
+    Sequence,
 )
 
 from unrpa.errors import (
@@ -33,6 +36,27 @@ ComplexIndexPart = Tuple[int, int, bytes]
 ComplexIndexEntry = Iterable[ComplexIndexPart]
 IndexPart = Union[SimpleIndexPart, ComplexIndexPart]
 IndexEntry = Iterable[IndexPart]
+
+
+class TreeNode:
+    def __init__(self, name: str, children: Iterable[Sequence[str]]) -> None:
+        self.name = name
+        if children:
+            self.children = [
+                TreeNode(
+                    child,
+                    [
+                        subchild[1:]
+                        for subchild in children_of_child
+                        if len(subchild) > 1
+                    ],
+                )
+                for (child, children_of_child) in itertools.groupby(
+                    children, key=operator.itemgetter(0)
+                )
+            ]
+        else:
+            self.children = []
 
 
 class UnRPA:
@@ -87,7 +111,7 @@ class UnRPA:
             )
 
     def extract_files(self) -> None:
-        self.log(UnRPA.error, "Extracting files.")
+        self.log(UnRPA.error, f"Extracting files from {self.archive}.")
         if self.mkdir:
             self.make_directory_structure(self.path)
         if not os.path.isdir(self.path):
@@ -119,11 +143,43 @@ class UnRPA:
                         raise ErrorExtractingFile(traceback.format_exc()) from error
 
     def list_files(self) -> None:
-        self.log(UnRPA.info, "Listing files:")
+        self.log(UnRPA.info, f"Listing files in {self.archive}:")
         with open(self.archive, "rb") as archive:
             paths = self.get_index(archive).keys()
         for path in sorted(paths):
             print(path)
+
+    def list_files_tree(self) -> None:
+        print(self.archive)
+        for line in self.tree_lines():
+            print(line)
+
+    def tree(self) -> TreeNode:
+        with open(self.archive, "rb") as archive:
+            paths = sorted(self.get_index(archive).keys())
+        return TreeNode(
+            self.archive,
+            [list(reversed(list(self.full_split(path)))) for path in paths],
+        )
+
+    @staticmethod
+    def full_split(path: str) -> Iterable[str]:
+        while path:
+            (path, tail) = os.path.split(path)
+            yield tail
+
+    def tree_lines(
+        self, current_node: TreeNode = None, prefix: str = ""
+    ) -> Iterable[str]:
+        if not current_node:
+            current_node = self.tree()
+        for child in current_node.children[:-1]:
+            yield f"{prefix}├--- {child.name}"
+            yield from self.tree_lines(child, f"{prefix}|    ")
+        if current_node.children:
+            child = current_node.children[-1]
+            yield f"{prefix}└--- {child.name}"
+            yield from self.tree_lines(child, f"{prefix}     ")
 
     def extract_file(
         self,

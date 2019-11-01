@@ -3,7 +3,7 @@
 ## About
 
 unrpa is a tool to extract files from the RPA archive format (from 
-[the Ren'Py Visual Novel Engine](http://www.renpy.org/).
+[the Ren'Py Visual Novel Engine](http://www.renpy.org/)).
 
 It can also be used as a library.
 
@@ -58,30 +58,35 @@ If you are running from source, you will need execute python directly:
 ## Command line usage
 
 ```
-usage: unrpa [-h] [-v] [-s] [-l] [-p PATH] [-m] [-f VERSION]
-             [--continue-on-error] [-o OFFSET] [-k KEY] [--version]
-             FILENAME
+usage: unrpa [-h] [-v] [-s] [-l | -t] [-p PATH] [-m] [--version]
+             [--continue-on-error] [-f VERSION] [-o OFFSET] [-k KEY]
+             FILENAME [FILENAME ...]
 ```
 
 ### Options
 
-| Positional Argument | Description              |
-|---------------------|--------------------------|
-| FILENAME            | the RPA file to extract. |
+| Positional Argument | Description                |
+|---------------------|----------------------------|
+| FILENAME            | the archive(s) to extract. |
 
-| Optional Argument            | Description                                                    |
-|------------------------------|----------------------------------------------------------------|
-| -h, --help                   | show this help message and exit                                |
-| -v, --verbose                | explain what is being done [default].                          |
-| -s, --silent                 | no output.                                                     |
-| -l, --list                   | only list contents, do not extract.                            |
-| -p PATH, --path PATH         | will extract to the given path.                                |
-| -m, --mkdir                  | will make any non-existent directories in extraction path.     |
-| -f VERSION, --force VERSION  | forces an archive version. May result in failure.<br>Possible versions: RPA-1.0, RPA-2.0, RPA-3.0, ALT-1.0, ZiX-12A, ZiX-12B, RPA-3.2. |
-| --continue-on-error          | try to continue extraction when something goes wrong.          | 
-| -o OFFSET, --offset OFFSET   | sets an offset to be used to decode unsupported archives.      |
-| -k KEY, --key KEY            | sets a key to be used to decode unsupported archives.          |
-| --version                    | show program's version number and exit                         |
+| Optional Argument            | Description                                                               |
+|------------------------------|---------------------------------------------------------------------------|
+| -h, --help                   | show this help message and exit                                           |
+| -v, --verbose                | explain what is being done, duplicate for more verbosity (default: 1).    |
+| -s, --silent                 | no non-essential output.                                                  |
+| -l, --list                   | list the contents of the archive(s) in a flat list.                       |
+| -t, --tree                   | list the contents of the archive(s) in a tree view                        |
+| -p PATH, --path PATH         | extract files to the given path (default: the current working directory). |
+| -m, --mkdir                  | will make any missing directories in the given extraction path.           |
+| --version                    | show program's version number and exit                                    |
+
+| Advanced Argument            | Description                                           |
+|------------------------------|-------------------------------------------------------|
+| --continue-on-error          | try to continue extraction when something goes wrong. |
+| -f VERSION, --force VERSION  | ignore the archive header and assume this exact version. Possible versions: RPA-1.0, RPA-2.0, RPA-3.0, ALT-1.0, ZiX-12A, ZiX-12B, RPA-3.2. |
+| -o OFFSET, --offset OFFSET   | ignore the archive header and use this exact offset.  |
+| -k KEY, --key KEY            | ignore the archive header and use this exact key.     |  
+
 
 ## Errors
 
