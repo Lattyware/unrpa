@@ -24,4 +24,5 @@ setuptools.setup(
         "Environment :: Console",
     ],
     entry_points={"console_scripts": ["unrpa = unrpa.__main__:main"]},
+    extras_require={"ZiX": "uncompyle6>=3.5.0"},
 )

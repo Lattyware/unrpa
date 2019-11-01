@@ -38,6 +38,9 @@ your package manager or
 If you are trying to extract more exotic RPA archives, there may be additional dependencies. unrpa should instruct 
 you how to install them if required.
 
+Package maintainers can see [`setup.py`](https://github.com/Lattyware/unrpa/blob/master/setup.py) for a complete set 
+of dependencies.
+
 ### Examples
 
 When installed through your package manager or pip, you should be able to use unrpa by opening a terminal or command 
