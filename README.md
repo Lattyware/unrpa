@@ -1,5 +1,10 @@
 # unrpa - Extract files from the RPA archive format.
 
+[![PyPI](https://img.shields.io/pypi/v/unrpa)](https://pypi.org/project/unrpa/) 
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/unrpa)](https://www.python.org/)
+[![GitHub](https://img.shields.io/github/license/Lattyware/unrpa)](https://github.com/Lattyware/unrpa/blob/master/COPYING)
+[![MyPy Check](https://github.com/Lattyware/unrpa/workflows/MyPy%20Check/badge.svg)](https://github.com/Lattyware/unrpa/actions?query=workflow%3A%22MyPy+Check%22)
+
 ## About
 
 unrpa is a tool to extract files from the RPA archive format (from 
