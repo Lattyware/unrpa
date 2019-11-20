@@ -30,7 +30,9 @@ class UnknownArchiveError(UnRPAError):
         decoded = header.decode("utf-8", "replace")
         super().__init__(
             "Auto-detection of the version for this archived failed—it is likely this archive is a version not "
-            f"supported. Try updating unrpa, or submitting a bug report. Header: “{decoded.strip()}”",
+            "supported. Try updating unrpa, or submitting a request for support at "
+            "https://github.com/Lattyware/unrpa/issues/new?template=new-archive-version.md"
+            f"Header: “{decoded.strip()}”",
             "You can try using --force to force a specific version rather than relying on auto-detection.",
         )
 
