@@ -91,7 +91,7 @@ usage: unrpa [-h] [-v] [-s] [-l | -t] [-p PATH] [-m] [--version]
 | Advanced Argument            | Description                                           |
 |------------------------------|-------------------------------------------------------|
 | --continue-on-error          | try to continue extraction when something goes wrong. |
-| -f VERSION, --force VERSION  | ignore the archive header and assume this exact version. Possible versions: RPA-1.0, RPA-2.0, RPA-3.0, ALT-1.0, ZiX-12A, ZiX-12B, RPA-3.2. |
+| -f VERSION, --force VERSION  | ignore the archive header and assume this exact version. Possible versions: RPA-1.0, RPA-2.0, RPA-3.0, ALT-1.0, ZiX-12A, ZiX-12B, RPA-3.2, RPA-4.0. |
 | -o OFFSET, --offset OFFSET   | ignore the archive header and use this exact offset.  |
 | -k KEY, --key KEY            | ignore the archive header and use this exact key.     |  
 
