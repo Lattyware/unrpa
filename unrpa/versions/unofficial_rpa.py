@@ -10,5 +10,11 @@ class RPA32(RPA3):
     name = "RPA-3.2"
     header = b"RPA-3.2"
 
+class RPA40(RPA3):
+    """A slightly custom variant of RPA-3.0."""
 
-versions: Tuple[Type[Version], ...] = (RPA32,)
+    name = "RPA-4.0"
+    header = b"RPA-4.0"
+
+
+versions: Tuple[Type[Version], ...] = (RPA32, RPA40,)
