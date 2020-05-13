@@ -17,7 +17,7 @@ It can also be used as a library.
 ### Package manager
 
 The best way to install unrpa is through your package manager, if a package is available for your operating system.
-I maintain [an AUR package](https://aur.archlinux.org/packages/unrpa/) for Arch Linux users.
+I maintain [an AUR package](https://aur.archlinux.org/packages/unrpa/) for Arch Linux users. The community maintains an `app-arch/unrpa` package for Gentoo and a `nixpkgs.unrpa` package for NixOS.
 
 ### pip
 
