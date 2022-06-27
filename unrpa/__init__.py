@@ -130,8 +130,10 @@ class UnRPA:
                     file_view = self.extract_file(
                         path, data, file_number, total_files, archive
                     )
-                    with open(os.path.join(self.path, path), "wb") as output_file:
-                        version.postprocess(file_view, output_file)
+                    # Program will try to open the directory and error
+                    if index != "":
+                        with open(os.path.join(self.path, path), "wb") as output_file:
+                            version.postprocess(file_view, output_file)
                 except BaseException as error:
                     if self.continue_on_error:
                         self.log(
