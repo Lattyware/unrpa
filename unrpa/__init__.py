@@ -131,7 +131,7 @@ class UnRPA:
                         path, data, file_number, total_files, archive
                     )
                     # Program will try to open the directory and error
-                    if index = "":
+                    if index != "":
                         with open(os.path.join(self.path, path), "wb") as output_file:
                             version.postprocess(file_view, output_file)
                 except BaseException as error:
