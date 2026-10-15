@@ -5,6 +5,7 @@ import pickle
 import sys
 import traceback
 import zlib
+from pathlib import Path
 from typing import (
     Union,
     Tuple,
@@ -116,6 +117,7 @@ class UnRPA:
             self.make_directory_structure(self.path)
         if not os.path.isdir(self.path):
             raise OutputDirectoryNotFoundError(self.path)
+        output_root = str(Path(self.path).resolve())
 
         version = self.version() if self.version else self.detect_version()
 
@@ -124,13 +126,22 @@ class UnRPA:
             total_files = len(index)
             for file_number, (path, data) in enumerate(index.items()):
                 try:
-                    self.make_directory_structure(
-                        os.path.join(self.path, os.path.split(path)[0])
-                    )
+                    output_path = str(Path(output_root, path).resolve())
+                    # On Python 3.7 Windows, resolve() can leave a dangling
+                    # symlink unchanged. Do not open an unresolved link.
+                    if (
+                        os.path.isabs(path)
+                        or os.path.commonpath((output_root, output_path)) != output_root
+                        or os.path.islink(output_path)
+                    ):
+                        raise ValueError(
+                            f"Archive path is outside the output directory: {path!r}"
+                        )
+                    self.make_directory_structure(os.path.dirname(output_path))
                     file_view = self.extract_file(
                         path, data, file_number, total_files, archive
                     )
-                    with open(os.path.join(self.path, path), "wb") as output_file:
+                    with open(output_path, "wb") as output_file:
                         version.postprocess(file_view, output_file)
                 except BaseException as error:
                     if self.continue_on_error:
