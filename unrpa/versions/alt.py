@@ -11,7 +11,7 @@ class ALT1(HeaderBasedVersion):
     extra_key = 0xDABE8DF0
 
     def find_offset_and_key(self, archive: BinaryIO) -> Tuple[int, Optional[int]]:
-        line = archive.readline()
+        line = archive.readline(4096)
         parts = line.split()
         key = int(parts[1], 16) ^ ALT1.extra_key
         offset = int(parts[2], 16)

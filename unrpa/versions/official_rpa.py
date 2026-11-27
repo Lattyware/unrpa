@@ -20,7 +20,7 @@ class RPA2(HeaderBasedVersion):
     header = b"RPA-2.0"
 
     def find_offset_and_key(self, archive: BinaryIO) -> Tuple[int, Optional[int]]:
-        offset = int(archive.readline()[8:], 16)
+        offset = int(archive.readline(4096)[8:], 16)
         return offset, None
 
 
@@ -31,7 +31,7 @@ class RPA3(HeaderBasedVersion):
     header = b"RPA-3.0"
 
     def find_offset_and_key(self, archive: BinaryIO) -> Tuple[int, Optional[int]]:
-        line = archive.readline()
+        line = archive.readline(4096)
         parts = line.split()
         offset = int(parts[1], 16)
         key = int(parts[2], 16)

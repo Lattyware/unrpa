@@ -1,10 +1,8 @@
 import itertools
 import operator
 import os
-import pickle
 import sys
 import traceback
-import zlib
 from typing import (
     Union,
     Tuple,
@@ -23,7 +21,9 @@ from unrpa.errors import (
     ErrorExtractingFile,
     AmbiguousArchiveError,
     UnknownArchiveError,
+    InvalidArchiveIndexError,
 )
+from unrpa.index import read_index
 from unrpa.versions import official_rpa, alt, zix, unofficial_rpa
 from unrpa.versions.version import Version
 from unrpa.view import ArchiveView
@@ -212,25 +212,29 @@ class UnRPA:
             offset, key = self.offset_and_key
         else:
             offset, key = version.find_offset_and_key(archive)
+        archive_size = archive.seek(0, os.SEEK_END)
+        if not 0 <= offset < archive_size:
+            raise InvalidArchiveIndexError("Index offset is outside the archive.")
         archive.seek(offset)
-        index: Dict[bytes, IndexEntry] = pickle.loads(
-            zlib.decompress(archive.read()), encoding="bytes"
-        )
+        index: Dict[bytes, IndexEntry] = read_index(archive)
         if key is not None:
             normal_index = UnRPA.deobfuscate_index(key, index)
         else:
             normal_index = UnRPA.normalise_index(index)
 
-        return {
-            UnRPA.ensure_str_path(path).replace("/", os.sep): data
-            for path, data in normal_index.items()
-        }
+        result: Dict[str, ComplexIndexEntry] = {}
+        for path, data in normal_index.items():
+            name = UnRPA.ensure_str_path(path).replace("/", os.sep)
+            if name in result:
+                raise InvalidArchiveIndexError("Duplicate filename in the archive index.")
+            result[name] = data
+        return result
 
     def detect_version(self) -> Version:
         potential = (version() for version in self.versions)
         ext = os.path.splitext(self.archive)[1].lower()
         with open(self.archive, "rb") as f:
-            header = f.readline()
+            header = f.readline(4096)
             detected = {version for version in potential if version.detect(ext, header)}
             if len(detected) > 1:
                 raise AmbiguousArchiveError(detected)

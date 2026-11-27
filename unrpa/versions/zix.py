@@ -39,7 +39,7 @@ def find_key(loader: str) -> int:
 
 
 def find_offset(archive: BinaryIO) -> int:
-    return obfuscation_offset(archive.readline().split()[-1])
+    return obfuscation_offset(archive.readline(4096).split()[-1])
 
 
 class ZiX12A(HeaderBasedVersion):
