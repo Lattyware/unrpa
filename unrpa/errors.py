@@ -12,6 +12,10 @@ class UnRPAError(Exception):
         super().__init__(message)
 
 
+class InvalidArchiveIndexError(UnRPAError):
+    """The archive index could not be decoded as RPA data."""
+
+
 class OutputDirectoryNotFoundError(UnRPAError):
     """An error for when the given output directory doesn’t exist."""
 
